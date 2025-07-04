@@ -58,7 +58,7 @@ L’ensemble est orchestré par **Airflow** pour automatiser les traitements et 
 ## 2.Démarrage
 Cloner le dépôt
 
-git clone [ https://…/avantages-sportifs.git](https://github.com/Phoenix9408/Avantages-Sportif/tree/main)
+git clone git@github.com:Phoenix9408/Avantages-Sportif.git
 
 ## 3.Lancer tous les services
 docker-compose up -d
