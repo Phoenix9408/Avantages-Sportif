@@ -5,9 +5,9 @@
 **Avantages Sportifs** est une solution de pipeline de données 100 % conteneurisée, conçue pour promouvoir l’activité sportive au sein de l’entreprise.  
 Elle permet de :
 
-1. **Capturer** en temps réel les activités sportives des collaborateurs dans une base PostgreSQL.  
+1. **Capturer** et historiser les activités sportives des collaborateurs dans une base PostgreSQL.  
 2. **Diffuser** ces événements via Redpanda (Kafka).  
-3. **Notifier** automatiquement sur Slack les équipes concernées.  
+3. **Notifier** automatiquement dans slack les activites des collaborateurs afin de les motiver.  
 4. **Calculer** et attribuer les avantages aux salariés selon leur pratique sportive.
    
 L’ensemble est orchestré par **Airflow** pour automatiser les traitements et supervisé par **Prometheus & Grafana** afin d’assurer fiabilité et performance de bout en bout.
