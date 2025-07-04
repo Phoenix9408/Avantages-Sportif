@@ -1,0 +1,23 @@
+{
+  "name": "postgres-activities-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "sport_avantages",
+    "database.server.name": "activites",
+    "plugin.name": "pgoutput",
+    "slot.name": "activites_slot",
+    "publication.name": "activites_pub",
+    "table.include.list": "public.activites_sportives_event",
+    "topic.prefix": "activites",
+    "snapshot.mode": "never",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "database.history.kafka.bootstrap.servers": "redpanda:9092",
+    "database.history.kafka.topic": "schema-changes.activites"
+  }
+}
+ 

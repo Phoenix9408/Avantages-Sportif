@@ -1,0 +1,10 @@
+FROM apache/airflow:2.9.0-python3.10
+
+# Paquets nécessaires aux scripts
+RUN pip install --no-cache-dir \
+      pandas \
+      openpyxl \
+      requests \
+      psycopg2-binary\
+      python-dotenv\
+      great_expectations==0.17.21

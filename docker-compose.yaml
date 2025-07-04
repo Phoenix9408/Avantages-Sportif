@@ -1,0 +1,294 @@
+version: "2.4"
+
+services:
+# ----------------------------------------------------------------- #
+# 1) Base PostgreSQL                                               #
+# ----------------------------------------------------------------- #
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sport_avantages
+    volumes:
+      - ./fresh_pgdata:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    command: >
+      postgres -c wal_level=logical
+               -c max_replication_slots=1
+               -c max_wal_senders=1
+    healthcheck:
+      test: ["CMD-SHELL", "PGPASSWORD=$$POSTGRES_PASSWORD pg_isready -h 127.0.0.1 -p 5432 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+# ----------------------------------------------------------------- #
+# 2) Redpanda (Kafka) + Console                                     #
+# ----------------------------------------------------------------- #
+  redpanda:
+    image: redpandadata/redpanda:latest
+    command:
+      - redpanda start
+      - --overprovisioned
+      - --smp 1
+      - --memory 512M
+      - --reserve-memory 0M
+      - --node-id 0
+      - --check=false
+      - --kafka-addr PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://redpanda:9092
+    ports:
+      - "9092:9092"
+      - "9644:9644"
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+
+  console:
+    image: docker.redpanda.com/redpandadata/console:latest
+    container_name: redpanda-console
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+    depends_on:
+      - redpanda
+
+# ----------------------------------------------------------------- #
+# 3) Debezium Connect                                               #
+# ----------------------------------------------------------------- #
+  connect:
+    image: debezium/connect:2.4
+    ports: ["8083:8083"]
+    depends_on:
+      redpanda: { condition: service_started }
+      postgres: { condition: service_healthy }
+    environment:
+      BOOTSTRAP_SERVERS: redpanda:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_PLUGIN_PATH: /kafka/connect,/usr/share/java
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8083/connectors || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+# ----------------------------------------------------------------- #
+# 4) Consumer Kafka → Slack                                         #
+# ----------------------------------------------------------------- #
+  kafka-slack-consumer:
+    build: ./kafka_slack_consumer
+    depends_on:
+      connect: { condition: service_started }
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      KAFKA_TOPIC: activites.public.activites_sportives_event
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sport_avantages
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
+      SLACK_CHANNEL: ${SLACK_CHANNEL}
+    volumes: [ "./data:/app/data" ]
+    command: python consumer.py
+
+# ----------------------------------------------------------------- #
+# 5) PgAdmin                                                        #
+# ----------------------------------------------------------------- #
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80" 
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+
+# ----------------------------------------------------------------- #
+# 6) Enregistrement auto du connecteur Debezium                     #
+# ----------------------------------------------------------------- #
+  connector-init:
+    image: curlimages/curl:8.2.1
+    depends_on:
+      connect: { condition: service_healthy }
+    volumes:
+      - ./debezium/register-connector.json:/register-connector.json
+    entrypoint: >-
+      sh -c '
+        echo "📡 Enregistrement du connecteur…" &&
+        curl -s -X POST http://connect:8083/connectors \
+             -H "Content-Type: application/json" \
+             --data @/register-connector.json &&
+        echo " Connecteur Debezium enregistré."
+      '
+
+# ----------------------------------------------------------------- #
+# 8) Airflow – initialisation                                       #
+# ----------------------------------------------------------------- #
+  airflow-init:
+    build:
+      context: ./airflow
+      dockerfile: Dockerfile.airflow
+    image:  my-airflow:latest
+    depends_on:
+      postgres: { condition: service_healthy }
+    env_file:
+      - ./.env
+    environment:
+      AIRFLOW__METRICS__STATSD_ON: "True"
+      AIRFLOW__METRICS__STATSD_HOST: "statsd-exporter"
+      AIRFLOW__METRICS__STATSD_PORT: "9125"
+      AIRFLOW__METRICS__STATSD_PREFIX: "airflow"
+      AIRFLOW__METRICS__PROMETHEUS_ON: "True"
+      AIRFLOW__METRICS__PROMETHEUS_HOST: "0.0.0.0"
+      AIRFLOW__METRICS__PROMETHEUS_PORT: "8082"
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/sport_avantages
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__FERNET_KEY: "CHANGE_ME_FERNET_KEY"
+      AIRFLOW_UID: 50000
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      ENTREPRISE_ADRESSE: ${ENTREPRISE_ADRESSE}
+      PRIME_RATE:         "${PRIME_RATE}"
+      WB_THRESHOLD:       "${WB_THRESHOLD}"
+      DEP_LIMIT_MARCHE:   "${DEP_LIMIT_MARCHE}"
+      DEP_LIMIT_VELO:     "${DEP_LIMIT_VELO}"
+      DEP_LIMIT_TROTT:    "${DEP_LIMIT_TROTT}"
+      JOURS_BIEN_ETRE: "${JOURS_BIEN_ETRE}"
+    volumes:
+      - ./:/opt/airflow/project
+      - ./data:/opt/airflow/project/data
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./data:/app/data
+    command: |
+      bash -e -c '
+        pip install pandas openpyxl requests psycopg2-binary
+        airflow db migrate
+        airflow users create --username admin --password admin \
+                             --firstname Admin --lastname User \
+                             --role Admin --email admin@local
+      '
+
+# ----------------------------------------------------------------- #
+# 9) Airflow – webserver + scheduler                                #
+# ----------------------------------------------------------------- #
+  airflow:
+    image: my-airflow:latest
+    container_name: airflow
+    restart: always
+    depends_on:
+      airflow-init: { condition: service_completed_successfully }
+    env_file:
+      - ./.env
+    environment:
+      AIRFLOW__METRICS__STATSD_ON: "True"
+      AIRFLOW__METRICS__STATSD_HOST: "statsd-exporter"
+      AIRFLOW__METRICS__STATSD_PORT: "9125"
+      AIRFLOW__METRICS__STATSD_PREFIX: "airflow"
+      AIRFLOW__METRICS__PROMETHEUS_ON: "True"
+      AIRFLOW__METRICS__PROMETHEUS_HOST: "0.0.0.0"
+      AIRFLOW__METRICS__PROMETHEUS_PORT: "8082"
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/sport_avantages
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__FERNET_KEY: "CHANGE_ME_FERNET_KEY"
+      AIRFLOW_UID: 50000
+      PYTHONPATH: /opt/airflow/project
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      ENTREPRISE_ADRESSE: ${ENTREPRISE_ADRESSE}
+      PRIME_RATE:         "${PRIME_RATE}"
+      WB_THRESHOLD:       "${WB_THRESHOLD}"
+      DEP_LIMIT_MARCHE:   "${DEP_LIMIT_MARCHE}"
+      DEP_LIMIT_VELO:     "${DEP_LIMIT_VELO}"
+      DEP_LIMIT_TROTT:    "${DEP_LIMIT_TROTT}"
+      JOURS_BIEN_ETRE: "${JOURS_BIEN_ETRE}"
+    volumes:
+      - ./:/opt/airflow/project
+      - ./data:/opt/airflow/project/data
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./data:/app/data
+    ports: ["8089:8080"]
+    command: >
+      bash -c "airflow scheduler & exec airflow webserver"
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres:5432/sport_avantages?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres
+
+  # ----------------------------------------------------------------- #
+  # 12) StatsD Exporter pour Airflow                                 #
+  # ----------------------------------------------------------------- #
+  statsd-exporter:
+    image: prom/statsd-exporter:latest
+    container_name: statsd_exporter
+    ports:
+      - "9125:9125/udp"
+      - "9102:9102"
+
+  # ----------------------------------------------------------------- #
+  # 13) Prometheus                                                   #
+  # ----------------------------------------------------------------- #
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgres-exporter
+      - redpanda
+      - statsd-exporter
+
+  # ----------------------------------------------------------------- #
+  # 14) Grafana                                                     #
+  # ----------------------------------------------------------------- #
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  redpanda_data:
+  pgadmin_data:
+  grafana_data:
+

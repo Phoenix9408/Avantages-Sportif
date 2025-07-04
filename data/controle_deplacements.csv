@@ -1,0 +1,69 @@
+﻿id_salarie,adresse,mode,distance_km,seuil_km,anomalie
+21886,"53 Av. de la Gare, 34970 Lattes",Marche/running,1.628,15.0,False
+81001,"74 Rue des Fleurs, 34970 Lattes",Marche/running,0.377,15.0,False
+17757,"Av. de La Mer, 34470 Pérols",Vélo/Trottinette/Autres,6.341,25.0,False
+62296,"31 Av. Grassion Cibrand, 34130 Mauguio",Vélo/Trottinette/Autres,8.166,25.0,False
+18246,"181 Av. de la Gare, 34970 Lattes",Vélo/Trottinette/Autres,1.537,25.0,False
+70643,"1037 Val des Sources, 34090 Montpellier",Vélo/Trottinette/Autres,8.16,25.0,False
+28160,"38 Plan des Arbousiers, 34970 Lattes",Vélo/Trottinette/Autres,7.429,25.0,False
+84233,"Av. de la Mer, Montpellier",Vélo/Trottinette/Autres,2.36,25.0,False
+48589,"45 Rue de la République, 34000 Montpellier",Vélo/Trottinette/Autres,5.448,25.0,False
+76341,"57 Av. de la Liberté, 34070 Montpellier",Vélo/Trottinette/Autres,6.476,25.0,False
+89943,"40 Rue du Pradas, 34470 Pérols",Marche/running,3.212,15.0,False
+34413,"367 Av. Marcel Pagnol, 34470 Pérols",Marche/running,3.614,15.0,False
+92736,"187 Chem. de la Draye du Marbre, 34170 Castelnau-le-Lez",Vélo/Trottinette/Autres,8.79,25.0,False
+71502,455 route de mendes 34000 Montpellier,Vélo/Trottinette/Autres,8.133,25.0,False
+16872,"10 Av. Maréchal Leclerc, 34280 La Grande-Motte",Vélo/Trottinette/Autres,13.593,25.0,False
+50408,"118 Imp. des Vignes, 34470 Pérols",Marche/running,3.356,15.0,False
+71190,"68 Rue du N, 34920 Le Crès",Vélo/Trottinette/Autres,10.785,25.0,False
+27620,"18 Rue des Vignes, 34970 Lattes",Vélo/Trottinette/Autres,2.359,25.0,False
+36981,"47 Av. de la Gare, 34970 Lattes",Marche/running,1.628,15.0,False
+89328,"8 Rue de la Vieille, 34000 Montpellier",Vélo/Trottinette/Autres,5.667,25.0,False
+32690,"84 Rue du Port, 34470 Pérols",Vélo/Trottinette/Autres,6.167,25.0,False
+17027,"Pl. Jean Jaurès, 34000 Montpellier",Vélo/Trottinette/Autres,5.685,25.0,False
+58045,"112 Chem. des Pins, 34170 Castelnau-le-Lez",Vélo/Trottinette/Autres,8.498,25.0,False
+53673,"129 Av. de la Liberté, 34070 Montpellier",Vélo/Trottinette/Autres,7.441,25.0,False
+51328,"22 Rue de la Paix, 34130 Mauguio",Vélo/Trottinette/Autres,11.676,25.0,False
+64886,"4 Pl. des Écoles, 34970 Lattes",Marche/running,0.249,15.0,False
+45140,"84 Rue des Écoles, 34980 Saint-Clément-de-Rivière",Vélo/Trottinette/Autres,16.152,25.0,False
+44927,"143 Rue des Sansouïres, 34970 Lattes",Vélo/Trottinette/Autres,7.761,25.0,False
+54625,"26 Bd de la Liberté, 34830 Clapiers",Vélo/Trottinette/Autres,9.693,25.0,False
+28529,"100 Bd Victor Hugo, 34000 Montpellier",Vélo/Trottinette/Autres,5.487,25.0,False
+60358,"15 Rue de la République, 34000 Montpellier",Vélo/Trottinette/Autres,5.469,25.0,False
+50504,"10 Rue du Marché aux Raisins, 34750 Villeneuve-lès-Maguelone",Vélo/Trottinette/Autres,11.911,25.0,False
+45221,"215 Rue Alphonse Allais, 34070 Montpellier",Vélo/Trottinette/Autres,6.696,25.0,False
+86948,"85 Av. de la Paix, 34690 Fabrègues",Vélo/Trottinette/Autres,19.781,25.0,False
+34899,"Pl. de la Liberté, 34470 Pérols",Marche/running,3.861,15.0,False
+36827,"Pl. du Marché, 34250 Palavas-les-Flots",Vélo/Trottinette/Autres,11.579,25.0,False
+46158,"44 Av. de la Paix, 34690 Fabrègues",Vélo/Trottinette/Autres,19.79,25.0,False
+67121,"Bd des Sports, 34000 Montpellier",Vélo/Trottinette/Autres,5.251,25.0,False
+76076,"141 Rue de la Plage, 34130 Mauguio",Vélo/Trottinette/Autres,7.797,25.0,False
+66386,"189 Pl. des Écoles, 34970 Lattes",Marche/running,0.276,15.0,False
+91916,"72 Rue des Pins, 34470 Pérols",Vélo/Trottinette/Autres,3.897,25.0,False
+49419,"13 Bd des Sports, 34000 Montpellier",Vélo/Trottinette/Autres,5.314,25.0,False
+30945,"90 Av. de la Liberté, 34070 Montpellier",Vélo/Trottinette/Autres,7.307,25.0,False
+41293,"6 Rue des Bougainvilliers, 34970 Lattes",Vélo/Trottinette/Autres,3.079,25.0,False
+96902,"19 Rue de l'Église, 34250 Palavas-les-Flots",Vélo/Trottinette/Autres,11.463,25.0,False
+69938,"7 Rue Alphonse Daudet, 34470 Pérols",Vélo/Trottinette/Autres,3.182,25.0,False
+46903,"57 Av. des Pins, 34130 Valergues",Vélo/Trottinette/Autres,16.341,25.0,False
+90813,"88 Av. de la Liberté, 34070 Montpellier",Vélo/Trottinette/Autres,7.307,25.0,False
+12497,"Rue du N, 34920 Le Crès",Vélo/Trottinette/Autres,10.811,25.0,False
+84603,"222 Rue Georges Bizet, 34130 Mauguio",Vélo/Trottinette/Autres,9.027,25.0,False
+92368,"Pl. de la Liberté, 34470 Pérols",Vélo/Trottinette/Autres,4.342,25.0,False
+22092,"77 Bd des Écoles, 34750 Villeneuve-lès-Maguelone",Vélo/Trottinette/Autres,11.769,25.0,False
+29456,"2 Rue Palladio, 34970 Lattes",Vélo/Trottinette/Autres,3.42,25.0,False
+60948,"40 Pl. des Écoles, 34970 Lattes",Marche/running,0.276,15.0,False
+74171,"49 Pl. du Marché, 34250 Palavas-les-Flots",Vélo/Trottinette/Autres,11.579,25.0,False
+53944,"58 Bd Ernest Renan, 34000 Montpellier",Vélo/Trottinette/Autres,5.085,25.0,False
+48154,"Rue des Vignes, 34070 Montpellier",Vélo/Trottinette/Autres,6.608,25.0,False
+50866,"16 Rue des Roses, 34970 Lattes",Marche/running,3.269,15.0,False
+35731,"46 Rue des Écoles, 34470 Pérols",Vélo/Trottinette/Autres,4.43,25.0,False
+51866,"30 Rue des Vignes, 34970 Lattes",Marche/running,2.266,15.0,False
+82858,"125 Rue du Port, 34280 La Grande-Motte",Vélo/Trottinette/Autres,17.147,25.0,False
+50955,"99 Rue du N, 34920 Le Crès",Vélo/Trottinette/Autres,10.776,25.0,False
+43965,"100 Av. de la Gare, 34970 Lattes",Marche/running,1.628,15.0,False
+42960,"17 Rue Maguelone, 34250 Palavas-les-Flots",Vélo/Trottinette/Autres,11.226,25.0,False
+13780,"56 Imp. Robespierre, 34130 Mauguio",Vélo/Trottinette/Autres,9.772,25.0,False
+18941,"68 Bd des Écoles, 34750 Villeneuve-lès-Maguelone",Vélo/Trottinette/Autres,11.773,25.0,False
+81676,"27 Av. du Général Leclerc, 34470 Pérols",Marche/running,4.064,15.0,False
+94680,"5 Av. de la Liberté, 34070 Montpellier",Vélo/Trottinette/Autres,5.716,25.0,False
