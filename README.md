@@ -68,8 +68,8 @@ POSTGRES_PORT=
 🚀 2. Démarrage rapide
 1️⃣ Cloner le dépôt
 
-
 git clone git@github.com:Phoenix9408/Avantages-Sportif.git
+
 cd Avantages-Sportif
 
 2️⃣ Lancer tous les services
@@ -94,7 +94,9 @@ docker-compose ps
 
 🏗 4. Architecture détaillée
 
-![Untitled Diagram-Page-1 drawio (1)](https://github.com/user-attachments/assets/f2124d06-0055-42c5-9a6e-d1c7790836d4)
+
+<img width="3497" height="1914" alt="Untitled Diagram drawio (2)" src="https://github.com/user-attachments/assets/06d73db8-855e-4174-bd35-46d7fa88c6cf" />
+
 
 🔮 5. Conclusion & perspectives
 ✅ Cette plateforme fournit déjà un pipeline bout-en-bout robuste et observable
